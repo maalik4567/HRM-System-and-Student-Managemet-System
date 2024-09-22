@@ -1,0 +1,231 @@
+﻿@model HR_Managamenr_System.Models.StudentViewModel
+
+@{
+    ViewBag.Title = "Edit Student";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Student</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border: 2px solid #6c757d;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control-sm {
+            width: 100%;
+        }
+
+        .label-width {
+            width: 420px;
+            padding-right: 1rem;
+        }
+
+        .submit-btn {
+            background-color: lightgreen;
+        }
+
+        .reset-btn {
+            background-color: lightcoral;
+        }
+
+        .text-danger {
+            color: red;
+        }
+
+        .box-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .select-box {
+            width: 350px;
+            height: 200px;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .course-item, .selected-item {
+            padding: 10px 0;
+            line-height: 1.5;
+        }
+
+        .selected-item {
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">STUDENT MANAGEMENT SYSTEM</h2>
+        <div class="d-flex justify-content-center">
+            <form id="studentForm" method="post" action="/Student/EditStudent">
+                @Html.HiddenFor(m => m.Student.Id)
+
+                <div class="form-row mb-3">
+                    <div class="col-md-3 label-width">
+                        <label for="Name" class="col-form-label">Student Name</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" id="Name" name="Student.Name" class="form-control form-control-sm" value="@Model.Student.Name" required />
+                        <div class="text-danger" id="nameError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row mb-3">
+                    <div class="col-md-3 label-width">
+                        <label class="col-form-label">Select Courses</label>
+                    </div>
+                    <div class="col-md-9 box-container">
+                        <div>
+                            <label><strong>Available Courses</strong></label>
+                            <select id="availableCourses" class="form-control select-box" multiple>
+                                @foreach (var course in ViewBag.Courses as IEnumerable<SelectListItem>)
+                                {
+                                    if (!Model.MarkedCourses.Contains(int.Parse(course.Value)))
+                                    {
+                                    <option class="course-item" value="@course.Value">@course.Text</option>
+                                    
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div>
+                            <label><strong>Selected Courses</strong></label>
+                            <select id="selectedCourses" class="form-control select-box" name="MarkedCourses" multiple>
+                                @foreach (var courseId in Model.MarkedCourses)
+                                {
+                                    var courses = (IEnumerable<SelectListItem>)ViewBag.Courses;
+                                    var course = courses.FirstOrDefault(c => c.Value == courseId.ToString());
+                                    if (course != null)
+                                    {
+                                        <option class="selected-item" value="@course.Value">@course.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row mb-3">
+                    <div class="col-md-3 label-width">
+                        <label for="Class" class="col-form-label">Class</label>
+                    </div>
+                    <div class="col-md-9">
+                        <select id="Class" name="Student.ClassId" class="form-control form-control-sm" required>
+                            <option value="">Select Class</option>
+                            @foreach (var cls in ViewBag.Classes as IEnumerable<SelectListItem>)
+                            {
+                                <option value="@cls.Value" @(Model.Student.ClassId == int.Parse(cls.Value) ? "selected" : "")>@cls.Text</option>
+                            }
+                        </select>
+                        <div class="text-danger" id="classError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row mb-3">
+                    <div class="col-md-3 label-width">
+                        <label for="ContactNumber" class="col-form-label">Contact Number</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="tel" id="ContactNumber" name="Student.ContactNumber" class="form-control form-control-sm" value="@Model.Student.ContactNumber" required />
+                        <div class="text-danger" id="contactError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-9">
+                        <button type="submit" class="btn btn-primary submit-btn mx-lg-5">Submit</button>
+                        @*<button type="reset" class="btn btn-secondary reset-btn mx-lg-5">Reset</button>*@
+                        <a href="/Student/StudentIndex" class="btn btn-info">Back to List</a>
+                    </div>
+                </div>
+
+                <div class="text-danger" id="courseError"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Move course from Available to Selected
+            $('#availableCourses').on('click', 'option', function () {
+                const selectedOption = $(this);
+                $('#selectedCourses').append(selectedOption.clone()); // Move to selected courses
+                selectedOption.remove(); // Remove from available courses
+            });
+
+            // Move course from Selected to Available
+            $('#selectedCourses').on('click', 'option', function () {
+                const selectedOption = $(this);
+                $('#availableCourses').append(selectedOption.clone()); // Move back to available courses
+                selectedOption.remove(); // Remove from selected courses
+            });
+
+            // Form validation
+            $('#studentForm').on('submit', function (e) {
+                let isValid = true;
+                $('.text-danger').text('');
+
+                if ($('#Name').val().trim() === '') {
+                    $('#nameError').text('Please enter the student\'s name.');
+                    isValid = false;
+                }
+
+                if ($('#Class').val() === '') {
+                    $('#classError').text('Please select a class.');
+                    isValid = false;
+                }
+
+                let selectedCourses = $('#selectedCourses option').map(function () {
+                    return $(this).val();
+                }).get();
+
+                if (selectedCourses.length === 0) {
+                    $('#courseError').text('Please select at least one course.');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Append hidden inputs for selected course IDs
+                $('#selectedCourses option').each(function () {
+                    $('#studentForm').append('<input type="hidden" name="MarkedCourses" value="' + $(this).val() + '">');
+                });
+            });
+
+            //// Reset button functionality to clear errors and reset courses
+            //$('button[type="reset"]').on('click', function () {
+            //    $('.text-danger').text(''); // Clear error messages
+            //    $('#selectedCourses').empty(); // Clear selected courses
+            //    $('#availableCourses').find('option').each(function () {
+            //        $(this).prop('selected', false); // Deselect all available courses
+            //    });
+            //});
+        });
+    </script>
+</body>
+</html>

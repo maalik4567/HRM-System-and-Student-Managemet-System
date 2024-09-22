@@ -1,0 +1,270 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Student</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background */
+        }
+
+        .container {
+            background-color: #ffffff; /* White background for the form */
+            border: 2px solid #6c757d; /* Border color */
+            border-radius: 10px; /* Rounded corners */
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+
+        .form-control-sm {
+            width: 100%;
+        }
+
+        .label-width {
+            width: 420px;
+            padding-right: 1rem;
+        }
+
+        .submit-btn {
+            background-color: lightgreen;
+        }
+
+        .reset-btn {
+            background-color: lightcoral; /* Change reset button color */
+        }
+
+        .text-danger {
+            color: red;
+        }
+
+        .box-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        /* Increased the width of select boxes */
+        .select-box {
+            width: 300px; /* Increased width */
+            height: 200px;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            padding: 5px;
+            overflow-y: auto;
+            overflow-x: hidden; /* Ensure horizontal content is hidden */
+        }
+
+        .course-item {
+            padding: 10px 0;
+        }
+
+            .course-item::after {
+                font-weight: bold;
+                margin-left: 10px;
+                cursor: pointer;
+            }
+
+        .selected-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #ccc;
+        }
+
+            .selected-item::before {
+                font-weight: bold;
+                margin-right: 10px;
+                cursor: pointer;
+            }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">STUDENT MANAGEMENT SYSTEM</h2>
+        <div class="d-flex justify-content-center">
+
+            <form id="studentForm" method="post" action="/Student/StudentIndex">
+                <div class="form-row mb-3">
+                    <div class="col-md-3 label-width">
+                        <label for="Name" class="col-form-label">Student Name</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" id="Name" name="Name" class="form-control form-control-sm" placeholder="Enter Student Name" required />
+                        <div class="text-danger" id="nameError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row mb-3">
+                    <div class="col-md-3 label-width">
+                        <label class="col-form-label">Select Courses</label>
+                    </div>
+                    <div class="col-md-9 box-container">
+                        <div>
+                            <label><strong>Available Courses</strong></label>
+                            <select id="availableCourses" class="form-control select-box" multiple>
+                                @foreach (var course in ViewBag.Courses as IEnumerable<SelectListItem>)
+                                {
+                                    <option class="course-item" value="@course.Value">@course.Text</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div>
+                            <label><strong>Selected Courses</strong></label>
+                            <select id="selectedCourses" class="form-control select-box" name="SelectedCourses" multiple>
+                                <!-- Selected courses will appear here -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row mb-3">
+                    <div class="col-md-3 label-width">
+                        <label for="Class" class="col-form-label">Class</label>
+                    </div>
+                    <div class="col-md-9">
+                        <select id="Class" name="Class" class="form-control form-control-sm" required>
+                            <option value="">Select Class</option>
+                            @foreach (var cls in ViewBag.Classes as IEnumerable<SelectListItem>)
+                            {
+                                <option value="@cls.Value">@cls.Text</option>
+                            }
+                        </select>
+                        <div class="text-danger" id="classError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row mb-3">
+                    <div class="col-md-3 label-width">
+                        <label for="ContactNumber" class="col-form-label">Contact Number</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="tel" id="ContactNumber" name="ContactNumber" class="form-control form-control-sm" placeholder="Enter Contact Number" required />
+                        <div class="text-danger" id="contactError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-9">
+                        <button type="submit" class="btn btn-primary submit-btn">Submit</button>
+                        <button type="reset" class="btn btn-secondary reset-btn mx-lg-5">Reset</button>
+                    </div>
+                </div>
+
+                <div class="text-danger" id="courseError"></div>
+            </form>
+        </div>
+
+        <div class="mt-5"></div>
+
+        <div class="table-container">
+            <table class="table table-striped mt-4">
+                <thead>
+                    <tr>
+                        <th>ID #</th>
+                        <th>Name</th>
+                        <th>Course</th>
+                        <th>Class</th>
+                        <th>Contact No.</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var student in Model)
+                    {
+                        <tr id="student-@student.Id">
+                            <td>@student.Id</td>
+                            <td>@student.Name</td>
+                            <td>@student.Courses</td>
+                            <td>@student.Class</td>
+                            <td>@student.ContactNumber</td>
+                            <td>
+                                <a class="btn btn-sm btn-success" href="@Url.Action("EditStudent", new { id = student.Id })">
+                                    ✔️
+                                </a>
+                                <form method="post" action="@Url.Action("DeleteStudent", "Student")" style="display:inline;">
+                                    <input type="hidden" name="id" value="@student.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this student?');">❌</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Add selected courses from availableCourses to selectedCourses
+            $('#availableCourses').on('click', 'option', function () {
+                const selectedOption = $(this);
+                $('#selectedCourses').append(selectedOption.clone());
+                selectedOption.remove();
+            });
+
+            // Remove selected courses from selectedCourses back to availableCourses
+            $('#selectedCourses').on('click', 'option', function () {
+                const selectedOption = $(this);
+                $('#availableCourses').append(selectedOption.clone());
+                selectedOption.remove();
+            });
+
+            // Validation on form submit
+            $('#studentForm').on('submit', function (e) {
+                let isValid = true;
+
+                // Clear previous error messages
+                $('.text-danger').text('');
+
+                // Check if name is entered
+                if ($('#Name').val().trim() === '') {
+                    $('#nameError').text('Please enter the student\'s name.');
+                    isValid = false;
+                }
+
+                // Check if class is selected
+                if ($('#Class').val() === '') {
+                    $('#classError').text('Please select a class.');
+                    isValid = false;
+                }
+
+                // Check if at least one course is selected
+                let selectedCourses = [];
+                $('#selectedCourses option').each(function () {
+                    selectedCourses.push($(this).val());
+                });
+
+                if (selectedCourses.length === 0) {
+                    $('#courseError').text('Please select at least one course.');
+                    isValid = false;
+                }
+
+                // If the form is invalid, prevent submission
+                if (!isValid) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Append hidden inputs for selected course IDs
+                selectedCourses.forEach(function (courseId) {
+                    $('#studentForm').append('<input type="hidden" name="SelectedCourses" value="' + courseId + '">');
+                });
+
+                return true;
+            });
+            //Reset button functionality to clear errors and reset courses
+            $('button[type="reset"]').on('click', function () {
+                $('.text-danger').text(''); // Clear error messages
+                $('#selectedCourses').empty(); // Clear selected courses
+                $('#availableCourses').find('option').each(function () {
+                    $(this).prop('selected', false); // Deselect all available courses
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>

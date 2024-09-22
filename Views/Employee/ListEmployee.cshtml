@@ -1,0 +1,145 @@
+﻿@model IEnumerable<HR_Managament_System.Models.Employee>
+
+@{
+    ViewBag.Title = "Employee List";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-lg-5 mt-4 mb p-3 bg-light rounded shadow-sm" style="border: 2px solid #007bff; border-radius: 10px; padding: 15px;">
+                <h2 class="mb-0 text-primary" style="border-bottom: 2px solid #007bff; padding-bottom: 10px; font-weight: bold;"><i class="fas fa-users"></i> Employee List</h2>
+                <a class="btn btn-success btn-lg" href="/Employee/CreateEmployee">
+                    <i class="fas fa-plus"></i> Create New Employee
+                </a>
+            </div>
+
+
+            <div class="card mb-xl-5 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="badge bg-light text-dark">Total Employees: @Model.Count()</span>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body p-0 table-responsive">
+                        <table id="employeeTable" class="table table-hover table-striped mb-0">
+                            <thead class="bg-primary text-white">
+                                <tr>
+                                    <th>📛 Name</th>
+                                    <th>📧 Email</th>
+                                    <th>💼 Position</th>
+                                    <th>🏢 Department</th>
+                                    <th>⚧ Gender</th>
+                                    <th>👔 Employee Type</th>
+                                    <th class="text-center">⚙️ Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var employee in Model)
+                                {
+                                    <tr data-id="@employee.EmpId">
+                                        <td>@employee.FullName</td>
+                                        <td>@employee.Email</td>
+                                        <td>@employee.Title</td>
+                                        <td>@employee.Name</td>
+                                        <td>@employee.Gender</td>
+                                        <td>@employee.Type</td>
+                                        <td class="text-center">
+                                            <a class="btn btn-sm text-info" href="@Url.Action("EmpDetail", new { id = employee.EmpId })">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a class="btn btn-sm text-primary" href="@Url.Action("UpdateEmployee", new { id = employee.EmpId })">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form method="post" action="@Url.Action("DeleteEmployee", "Employee")" style="display:inline;">
+                                                <input type="hidden" name="id" value="@employee.EmpId" />
+                                                <button type="submit" class="btn btn-sm text-danger" onclick="return confirm('Are you sure you want to delete this employee?');">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <nav aria-label="Employee List Pagination" class="mt-4">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item">
+                            <a class="page-link" href="#" id="first">First ⏮️</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" id="previous">Previous ⬅️</a>
+                        </li>
+                        <li class="page-item active">
+                            <span class="page-link" id="current-page">1</span>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" id="next">Next ➡️</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" id="last">Last ⏭️</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var rowsPerPage = 6;
+        var rows = $('#employeeTable tbody tr');
+        var totalRows = rows.length;
+        var totalPages = Math.ceil(totalRows / rowsPerPage);
+        var currentPage = 1;
+
+        function showPage(page) {
+            var start = (page - 1) * rowsPerPage;
+            var end = start + rowsPerPage;
+
+            rows.hide();
+            rows.slice(start, end).show();
+
+            $('.pagination .page-item').removeClass('active');
+            $('#current-page').text(page);
+            $('.pagination .page-item').eq(page).addClass('active');
+        }
+
+        showPage(currentPage);
+
+        $('#first').click(function (e) {
+            e.preventDefault();
+            currentPage = 1;
+            showPage(currentPage);
+        });
+
+        $('#previous').click(function (e) {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        });
+
+        $('#next').click(function (e) {
+            e.preventDefault();
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        });
+
+        $('#last').click(function (e) {
+            e.preventDefault();
+            currentPage = totalPages;
+            showPage(currentPage);
+        });
+    });
+</script>
+<link rel="stylesheet" type="text/css" href="~/Content/style-emp.css" />

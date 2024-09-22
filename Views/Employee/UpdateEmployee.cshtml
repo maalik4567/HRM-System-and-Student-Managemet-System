@@ -1,0 +1,126 @@
+﻿@model HR_Managament_System.Models.Employee
+
+@{
+    ViewBag.Title = "Update Employee";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 border rounded">
+                    <h2 class="text-center text-primary mb-4">👤 Update Employee</h2>
+
+                    @using (Html.BeginForm("UpdateEmployee", "Employee", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        @Html.HiddenFor(model => model.EmpId)
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="FullName" class="form-label">Full Name:</label>
+                                @Html.TextBoxFor(model => model.FullName, new { @class = "form-control", placeholder = "Enter full name" })
+                                @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="Email" class="form-label">📧 Email:</label>
+                                @Html.TextBoxFor(model => model.Email, new { @class = "form-control", placeholder = "Enter email address" })
+                                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="Department" class="form-label">🏢 Department:</label>
+                                @Html.DropDownListFor(model => model.DepartmentID,
+                                    (IEnumerable<SelectListItem>)ViewBag.Departments,
+                                    "Select Department",
+                                    new { @class = "form-control", value=""})
+                                @Html.ValidationMessageFor(model => model.DepartmentID, "", new { @class = "text-danger"})
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="Position" class="form-label">💼 Position:</label>
+                                @Html.DropDownListFor(model => model.PositionID,
+                                    (IEnumerable<SelectListItem>)ViewBag.Positions,
+                                    "Select Position",
+                                    new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.PositionID, "", new { @class = "text-danger",Model.Title })
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="HireDate" class="form-label">🗓️ Hire Date:</label>
+                                @Html.TextBoxFor(model => model.HireDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                                @Html.ValidationMessageFor(model => model.HireDate, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="DateOfBirth" class="form-label">🎂 Date of Birth:</label>
+                                @Html.TextBoxFor(model => model.DateOfBirth, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                                @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="EmployeeType" class="form-label">👔 Employee Type:</label>
+                                @Html.DropDownListFor(model => model.EmpTypeID,
+                                    (IEnumerable<SelectListItem>)ViewBag.EmployeeTypes,
+                                    "Select Employee Type",
+                                    new { @class = "form-control"})
+                                @Html.ValidationMessageFor(model => model.EmpTypeID, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="PhoneNumber" class="form-label">📞 Phone:</label>
+                                @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", placeholder = "Enter phone number" })
+                                @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="CNIC" class="form-label">e🆔 CNIC:</label>
+                                @Html.TextBoxFor(model => model.CNIC, new { @class = "form-control", placeholder = "Enter CNIC number" })
+                                @Html.ValidationMessageFor(model => model.CNIC, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="Salary" class="form-label">💰 Salary:</label>
+                                @Html.TextBoxFor(model => model.Salary, new { @class = "form-control", placeholder = "Enter salary amount" })
+                                @Html.ValidationMessageFor(model => model.Salary, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-1">
+                            <label for="Gender" class="form-label">⚧ Gender:</label>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.Gender, "Male", new { @class = "form-check-input" })
+                                <label class="form-check-label">Male</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.Gender, "Female", new { @class = "form-check-input" })
+                                <label class="form-check-label">Female</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.Gender, "Other", new { @class = "form-check-input" })
+                                <label class="form-check-label">Other</label>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success btn-lg me-3">
+                                <i class="fas fa-check-circle"></i> Update
+                            </button>
+                            <a class="btn btn-primary btn-lg" href="@Url.Action("ListEmployee")">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
